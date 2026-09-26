@@ -1,0 +1,27 @@
+---
+- name: Assert that we can actually read a schema
+  ansible.builtin.assert:
+    that:
+      - assert_schema_filename is defined or assert_schema is defined
+    fail_msg: 'You must define assert_schema_filename to load or assert_schema for schema definitions'
+
+- name: Check the state of the file
+  ansible.builtin.stat:
+    path: "{{ assert_schema_filename }}"
+  register: __assert_schema_filename_stat
+  when:
+    - assert_schema_filename is defined
+
+- name: Assert that we can load the schema file if it is defined
+  ansible.builtin.assert:
+    that:
+      - __assert_schema_filename_stat.stat.exists | bool
+  when:
+    - assert_schema_filename is defined
+
+- name: Load the schema file if it is defined
+  ansible.builtin.include_vars:
+    file: "{{ assert_schema_filename }}"
+    name: assert_schema
+  when:
+    - assert_schema_filename is defined

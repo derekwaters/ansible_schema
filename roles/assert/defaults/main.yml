@@ -1,0 +1,5 @@
+---
+# defaults file for assert
+assert_schema_filename: local_schema_file.yaml
+assert_schema:
+  schema: []

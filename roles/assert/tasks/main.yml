@@ -1,0 +1,5 @@
+---
+- name: "Collect Schema Definitions"
+  ansible.builtin.include_tasks: collect_schema.yml
+- name: "Assert Schema Definitions"
+  ansible.builtin.include_tasks: iterate_vars.yml

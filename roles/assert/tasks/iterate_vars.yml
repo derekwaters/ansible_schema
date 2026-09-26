@@ -1,0 +1,9 @@
+---
+- name: Validate Var
+  derekwaters.ansible_schema.assert_var:
+    var_name: "{{ __schema_item.name }}"
+    schema: "{{ __schema_item }}"
+  loop: "{{ assert_schema.schema }}"
+  loop_control:
+    label: "{{ __schema_item.name }}"
+    loop_var: __schema_item
