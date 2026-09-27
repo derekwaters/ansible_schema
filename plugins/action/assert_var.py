@@ -38,50 +38,79 @@ class ActionModule(ActionBase):
 
         my_test_value = task_vars.get(var_name)
 
+        return self.check_var_against_schema(result, var_name, my_test_value, schema)
+
+
+    def check_var_against_schema(self, result, var_name, value, schema):
         # Check required
-        if 'required' in schema and schema['required'] and my_test_value is None:
+        if 'required' in schema and schema['required'] and value is None:
             result['failed'] = True
             result['msg'] = "Required var {0} not defined".format(var_name)
             return result
 
         # Check type
-        if native_type_name(my_test_value) != schema['type']:
+        if native_type_name(value) != schema['type']:
             result['failed'] = True
-            result['msg'] = "var {0} of type {1} does not match expected type {2}".format(var_name, native_type_name(my_test_value), schema['type'])
+            result['msg'] = "var {0} of type {1} does not match expected type {2}".format(var_name, native_type_name(value), schema['type'])
             return result
 
-        if self.is_numeric(my_test_value):
+        if self.is_numeric(value):
             # Check min_value
-            if 'min_value' in schema and my_test_value < schema['min_value']:
+            if 'min_value' in schema and value < schema['min_value']:
                 result['failed'] = True
-                result['msg'] = "var {0} must be greater than or equal to {1} - got {2}".format(var_name, schema['min_value'], my_test_value)
+                result['msg'] = "var {0} must be greater than or equal to {1} - got {2}".format(var_name, schema['min_value'], value)
                 return result
 
             # Check max_value
-            if 'max_value' in schema and my_test_value > schema['max_value']:
+            if 'max_value' in schema and value > schema['max_value']:
                 result['failed'] = True
-                result['msg'] = "var {0} must be less than or equal to {1} - got {2}".format(var_name, schema['max_value'], my_test_value)
+                result['msg'] = "var {0} must be less than or equal to {1} - got {2}".format(var_name, schema['max_value'], value)
                 return result
 
         # Check allowed_values
-        if native_type_name(my_test_value) == 'str':
+        if native_type_name(value) == 'str':
             if 'allowed_values' in schema and schema['type'] == 'str':
-                if my_test_value not in schema['allowed_values']:
+                if value not in schema['allowed_values']:
                     result['failed'] = True
-                    result['msg'] = "var {0} must be one of the allowed values {1} - got {2}".format(var_name, ','.join(schema['allowed_values']), my_test_value)
+                    result['msg'] = "var {0} must be one of the allowed values {1} - got {2}".format(var_name, ','.join(schema['allowed_values']), value)
                     return result
 
             # Check min_length
-            if 'min_length' in schema and len(my_test_value) < schema['min_length']:
+            if 'min_length' in schema and len(value) < schema['min_length']:
                 result['failed'] = True
-                result['msg'] = "var {0} must be {1} chars or longer - got {2}".format(var_name, schema['min_length'], len(my_test_value))
+                result['msg'] = "var {0} must be {1} chars or longer - got {2}".format(var_name, schema['min_length'], len(value))
                 return result
 
             # Check max_length
-            if 'max_length' in schema and len(my_test_value) > schema['max_length']:
+            if 'max_length' in schema and len(value) > schema['max_length']:
                 result['failed'] = True
-                result['msg'] = "var {0} must be {1} chars or shorter - got {2}".format(var_name, schema['max_length'], len(my_test_value))
+                result['msg'] = "var {0} must be {1} chars or shorter - got {2}".format(var_name, schema['max_length'], len(value))
                 return result
+
+        # Check lists
+        if native_type_name(value) == 'list':
+            # Check min_length
+            if 'min_length' in schema and len(value) < schema['min_length']:
+                result['failed'] = True
+                result['msg'] = "var {0} must be {1} items or longer - got {2}".format(var_name, schema['min_length'], len(value))
+                return result
+
+            # Check max_length
+            if 'max_length' in schema and len(value) > schema['max_length']:
+                result['failed'] = True
+                result['msg'] = "var {0} must be {1} items or shorter - got {2}".format(var_name, schema['max_length'], len(value))
+                return result
+
+            # Now check each item
+            if 'list_values' in schema:
+                for idx, list_item in enumerate(value):
+                    list_item_name = "{0}[{1}]".format(var_name, idx)
+                    # print("Checking {0}".format(list_item_name))
+                    # print(list_item)
+                    # print(schema['list_values'])
+                    list_result = self.check_var_against_schema(result, list_item_name, list_item, schema['list_values'])
+                    if 'failed' in list_result and list_result['failed']:
+                        return list_result
 
         result['changed'] = False
         result['msg'] = "var {0} matches schema".format(var_name)
