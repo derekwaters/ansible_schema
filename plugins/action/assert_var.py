@@ -112,6 +112,28 @@ class ActionModule(ActionBase):
                     if 'failed' in list_result and list_result['failed']:
                         return list_result
 
+        # Check dicts
+        if native_type_name(value) == 'dict':
+
+            # Now check each item
+            if 'dict_values' in schema:
+                for schema_def in schema['dict_values']:
+                    key_name = schema_def['name']
+                    dict_item_name = "{0}.{1}".format(var_name, key_name)
+
+                    # If it's required, check that it exists
+                    if 'required' in schema_def and schema_def['required']:
+                        if key_name not in value:
+                            result['failed'] = True
+                            result['msg'] = "var {0} is required".format(dict_item_name)
+                            return result
+
+                    # If it exists, assert that it meets the schema
+                    if key_name in value:
+                        dict_result = self.check_var_against_schema(result, dict_item_name, value[key_name], schema_def)
+                        if 'failed' in dict_result and dict_result['failed']:
+                            return dict_result
+
         result['changed'] = False
         result['msg'] = "var {0} matches schema".format(var_name)
         return result

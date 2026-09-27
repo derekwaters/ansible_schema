@@ -21,7 +21,7 @@ Each schema object defines schema validation for a single Ansible var. The schem
 | min_value | no | int, float | int, float | This field defines the minimum value (inclusive) of an int or float |
 | max_value | no | int, float | int, float | This field defines the maximum value (inclusive) of an int or float |
 | list_values | no | dict | list | This field defines a child schema which will be applied to all of this variable's child list items |
-| dict_values | no | dict | dict | This field defines a dict of schema objects where this variable's child keys will be compared to find appropriate schemas to apply |
+| dict_values | no | list of dict | dict | This field defines a list of schema objects where the name matches the key of the variable's dict, and the schema definition must match the object referenced by that key |
 
 ## Example Schema
 
