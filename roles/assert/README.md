@@ -1,31 +1,42 @@
-Role Name
+assert
 =========
 
-A brief description of the role goes here.
+This role prepares a defined Ansible variable schema, and then asserts that the current Ansible variable namespace matches the schema.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+None.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+This role requires one of the two following variables:
+
+1. assert_schema_filename - The path to a schema definition file in YAML format. Refer to the schema definition documentation for the contents of this file. The file should be located on the Ansible control host, not on the managed host.
+2. assert_schema - If the schema is being provided in-memory, this var should be passed as a dict, with a single schema key containing a list of schema objects. Refer to the schema definition documentation for the structure of this data.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Example usage of this role is shown below.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+---
+- name: Ensure all of our required variables are set properly.
+  hosts: all
+  tasks:
+    - name: Assert that our variables meet the schema
+      ansible.builtin.include_role:
+        name: derekwaters.ansible_schema.assert
+      vars:
+        assert_schema_filename: test_schema.yml
+```
 
 License
 -------
@@ -35,4 +46,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Derek Waters (derek@frisbeeworld.com) - https://github.com/derekwaters/
