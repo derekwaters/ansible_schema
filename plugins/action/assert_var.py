@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import typing as t
+import re
 
-from ansible.errors import AnsibleError
 from ansible.plugins.action import ActionBase
 from ansible.module_utils.datatag import native_type_name
 
@@ -85,6 +84,12 @@ class ActionModule(ActionBase):
             if 'max_length' in schema and len(value) > schema['max_length']:
                 result['failed'] = True
                 result['msg'] = "var {0} must be {1} chars or shorter - got {2}".format(var_name, schema['max_length'], len(value))
+                return result
+
+            # Check regex
+            if 'regex' in schema and re.search(schema['regex'], value) is None:
+                result['failed'] = True
+                result['msg'] = "var {0} must match the regular expression {1}".format(var_name, schema['regex'])
                 return result
 
         # Check lists
