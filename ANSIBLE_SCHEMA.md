@@ -16,6 +16,7 @@ Each schema object defines schema validation for a single Ansible var. The schem
 | type | yes | str | Any | This field defines the Python type of the variable. Valid values are [str, float, bool, int, list, dict] |
 | required | no | bool | Any | This field is used to define whether a variable or a child object must be defined for the schema to be valid |
 | allowed_values | no | list of str | str | This field lists valid string values for a str field (ie. an enum type) |
+| regex | no | str | str | This field defines a regular expression in Python format, which will be applied to validate the string |
 | min_length | no | int | str, list | This field defines the minimum length (inclusive) of a string or list |
 | max_length | no | int | str, list | This field defines the maximum length (inclusive) of a string or list |
 | min_value | no | int, float | int, float | This field defines the minimum value (inclusive) of an int or float |
@@ -43,6 +44,10 @@ schema:
       - blue
       - indigo
       - violet
+  - name: test_identifier
+    required: true
+    type: str
+    regex: "^[A-Z]{3}-[0-9]+$"
   - name: test_integer
     type: int
     min_value: 1
