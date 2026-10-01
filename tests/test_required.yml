@@ -1,0 +1,25 @@
+---
+- name: Test the 'required' schema parameter
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  # Test data
+  vars:
+    test_this_var_exists: abc123
+
+  tasks:
+    - name: Test required var that exists
+      derekwaters.ansible_schema.assert:
+        var_name: test_this_var_exists
+        schema:
+          name: test_this_var_exists
+          required: true
+    
+    - name: Test required var that doesn't exist
+      derekwaters.ansible_schema.assert:
+        var_name: test_this_var_missing
+        schema:
+          name: test_this_var_missing
+          required: true
+      

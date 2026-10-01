@@ -17,4 +17,8 @@ documentation: https://github.com/derekwaters/ansible_schema
 homepage: https://github.com/derekwaters/ansible_schema
 issues: https://github.com/derekwaters/ansible_schema/issues
 
-build_ignore: []
+build_ignore:
+  - 'examples/'
+  - 'tests/'
+  - '.gitignore'
+  - '.git'
