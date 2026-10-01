@@ -1,0 +1,24 @@
+---
+- name: Test my variable data
+  hosts: all
+  connection: local
+  gather_facts: false
+
+  vars:
+    test_reqd_val: is_here
+    test_enum: violet
+    test_integer: 20
+    test_float: 2.3
+    test_list:
+      - collingwood
+      - essendon
+    test_dict:
+      collingwood: true
+      essendon: false
+
+  tasks:
+    - name: Check the assertion role
+      ansible.builtin.include_role:
+        name: assert
+      vars:
+        assert_schema_filename: sample_schema.yml

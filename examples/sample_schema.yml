@@ -1,0 +1,37 @@
+---
+schema:
+  - name: test_reqd_val
+    required: true
+    type: str
+  - name: test_enum
+    type: str
+    allowed_values:
+      - red
+      - orange
+      - yellow
+      - green
+      - blue
+      - indigo
+      - violet
+  - name: test_identifier
+    required: true
+    type: str
+    regex: "^[A-Z]{3}-[0-9]+$"
+  - name: test_integer
+    type: int
+    min_value: 1
+    max_value: 20
+  - name: test_float
+    type: float
+    min_value: 2.0
+  - name: test_list
+    type: list
+    list_values:
+      type: str
+      allowed_values:
+        - adelaide
+        - brisbane
+        - carlton
+        - collingwood
+        - essendon
+        - geelong
