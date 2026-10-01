@@ -3,7 +3,28 @@ from __future__ import annotations
 import re
 
 from ansible.plugins.action import ActionBase
-from ansible.module_utils.datatag import native_type_name
+
+try:
+    from ansible.module_utils.datatag import native_type_name
+    native_type_name_found = True
+except ImportError:
+    native_type_name_found = False
+
+def safe_native_type_name(value: object) -> str:
+    if native_type_name_found:
+        return native_type_name(value)
+    check_types_map = {
+        "str": str,
+        "int": int,
+        "bool": bool,
+        "float": float,
+        "list": list,
+        "dict": dict
+    }
+    for check_type_label, check_type in check_types_map.items():
+        if isinstance(value, check_type):
+            return check_type_label
+    return ""
 
 class ActionModule(ActionBase):
     """Assert that a variable matches an expected definition."""
@@ -48,9 +69,9 @@ class ActionModule(ActionBase):
             return result
 
         # Check type
-        if native_type_name(value) != schema['type']:
+        if safe_native_type_name(value) != schema['type']:
             result['failed'] = True
-            result['msg'] = "var {0} of type {1} does not match expected type {2}".format(var_name, native_type_name(value), schema['type'])
+            result['msg'] = "var {0} of type {1} does not match expected type {2}".format(var_name, safe_native_type_name(value), schema['type'])
             return result
 
         if self.is_numeric(value):
@@ -67,7 +88,7 @@ class ActionModule(ActionBase):
                 return result
 
         # Check allowed_values
-        if native_type_name(value) == 'str':
+        if safe_native_type_name(value) == 'str':
             if 'allowed_values' in schema and schema['type'] == 'str':
                 if value not in schema['allowed_values']:
                     result['failed'] = True
@@ -93,7 +114,7 @@ class ActionModule(ActionBase):
                 return result
 
         # Check lists
-        if native_type_name(value) == 'list':
+        if safe_native_type_name(value) == 'list':
             # Check min_length
             if 'min_length' in schema and len(value) < schema['min_length']:
                 result['failed'] = True
@@ -118,7 +139,7 @@ class ActionModule(ActionBase):
                         return list_result
 
         # Check dicts
-        if native_type_name(value) == 'dict':
+        if safe_native_type_name(value) == 'dict':
 
             # Now check each item
             if 'dict_values' in schema:
@@ -144,4 +165,4 @@ class ActionModule(ActionBase):
         return result
 
     def is_numeric(self, test_val):
-        return native_type_name(test_val) == 'int' or native_type_name(test_val) == 'float'
+        return safe_native_type_name(test_val) == 'int' or safe_native_type_name(test_val) == 'float'
