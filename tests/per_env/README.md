@@ -14,4 +14,8 @@ This sample test playbook operates with a single 'localhost' inventory, and can 
 
 ```bash
 ansible-playbook -i inventory -e target_env=nonprod test_env_schema.yml
+ansible-playbook -i inventory -e target_env=prod test_env_schema.yml
 ```
+
+Currently the prod test fails because the instance type is the same for nonprod and prod in testing_vars.j2.
+The nonprod test fails because the storage value for nonprod is incorrect in testing_vars.j2 (should be 200, not 300)
