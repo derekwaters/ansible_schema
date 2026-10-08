@@ -1,0 +1,22 @@
+---
+schema:
+  - name: target_env
+    required: true
+    type: str
+    allowed_values:
+      - "{{ expected_target_env }}"
+  - name: ad_hostname
+    required: true
+    type: str
+    allowed_values:
+      - "{{ expected_ad_hostname }}"
+  - name: instance_type
+    required: true
+    type: str
+    allowed_values:
+      - "{{ expected_instance_type }}"
+  - name: storage
+    required: true
+    type: int
+    min_value: "{{ expected_storage }}"
+    max_value: "{{ expected_storage }}"

@@ -1,0 +1,5 @@
+---
+ad_hostname: {% if 'non' in target_env %}nonprod.localdomain{% else %}prod.localdomain{% endif %}
+
+instance_type: t3.small
+storage: {% if 'non' in target_env %}300{% else %}2000{% endif %}

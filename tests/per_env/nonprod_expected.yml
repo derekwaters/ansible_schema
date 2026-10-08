@@ -1,0 +1,5 @@
+---
+expected_target_env: nonprod
+expected_ad_hostname: nonprod.localdomain
+expected_instance_type: t3.small
+expected_storage: 200

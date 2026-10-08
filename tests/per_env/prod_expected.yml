@@ -1,0 +1,5 @@
+---
+expected_target_env: prod
+expected_ad_hostname: prod.localdomain
+expected_instance_type: t3.xlarge
+expected_storage: 2000

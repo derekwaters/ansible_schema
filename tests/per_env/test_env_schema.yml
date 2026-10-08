@@ -1,0 +1,39 @@
+---
+- name: Test schema by environment
+  hosts: all
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Assert that we've provided an environment on the command line
+      ansible.builtin.assert:
+        that:
+          - target_env is defined
+          - target_env in ["prod", "nonprod"]
+
+    - name: Load the expected variables
+      ansible.builtin.include_vars:
+        file: "{{ target_env }}_expected.yml"
+
+    - name: Load the schema template
+      ansible.builtin.include_vars:
+        file: "var_schema.template"
+        name: assert_schema
+
+    - name: Build temporary template definitions
+      ansible.builtin.template:
+        src: 'testing_vars.j2'
+        dest: 'testing_vars.yml'
+
+    - name: Load temporary definitions
+      ansible.builtin.include_vars:
+        file: "testing_vars.yml"
+
+    - name: Remove temporary definitions
+      ansible.builtin.file:
+        path: "testing_vars.yml"
+        state: absent
+
+    - name: Check the assertion role
+      ansible.builtin.include_role:
+        name: assert
